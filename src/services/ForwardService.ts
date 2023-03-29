@@ -419,11 +419,21 @@ export default class ForwardService {
           brief += '[Spoiler 图片]';
         }
         else {
-          chain.push({
-            type: 'image',
-            file: await message.downloadMedia({}),
-            asface: !!message.sticker,
-          });
+          if (message.document?.mimeType === 'image/webp') {
+            const convertedPath = await convert.png(message.document.id.toString(16), () => message.downloadMedia({}));
+            chain.push({
+              type: 'image',
+              file: convertedPath,
+              asface: true,
+            });
+          }
+          else {
+            chain.push({
+              type: 'image',
+              file: await message.downloadMedia({}),
+              asface: !!message.sticker,
+            });
+          }
           brief += '[图片]';
         }
       }
